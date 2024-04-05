@@ -28,6 +28,7 @@ def loma_to_ctypes_type(t : loma_ir.type | loma_ir.arg,
     match t:
         case loma_ir.Arg():
             if isinstance(t.t, loma_ir.Array):
+
                 return loma_to_ctypes_type(t.t, ctypes_structs)
             else:
                 if t.i == loma_ir.Out():
@@ -124,7 +125,7 @@ def compile(loma_code : str,
         print('Generated C code:')
         print(code)
 
-        log = run(['gcc', '-shared', '-fPIC', '-o', output_filename, '-O2', '-x', 'c', '-'],
+        log = run(['gcc',  '-shared', '-fPIC', '-o', output_filename, '-O2', '-x', 'c', '-'],
             input = code,
             encoding='utf-8',
             capture_output=True)
@@ -161,15 +162,18 @@ void atomic_add(float *ptr, float val) {
 
         output_dir = os.path.dirname(output_filename)
         tasksys_obj_path = os.path.join(output_dir, 'tasksys.o')
-        log = run(['g++', '-c', '-o', output_filename, '-O2', '-o', tasksys_obj_path, tasksys_path],
+        log = run(['g++','-c', '-o', output_filename, '-O2','-I','include/concrt.h', "-L", "lib/" '-o', tasksys_obj_path, tasksys_path],
             encoding='utf-8',
             capture_output=True)
+
         if log.returncode != 0:
+            print("bbbbbbbbbbbbbbb")
             print(log.stderr)        
 
-        log = run(['g++', '-shared', '-o', output_filename, '-O2', obj_filename, tasksys_obj_path],
+        log = run(['g++', '-shared', '-o', output_filename, '-O2','-I"include/concrt.h"',obj_filename, tasksys_obj_path],
             encoding='utf-8',
             capture_output=True)
+        
         if log.returncode != 0:
             print(log.stderr)
     elif target == 'opencl':

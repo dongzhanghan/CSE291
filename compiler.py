@@ -136,13 +136,13 @@ def compile(loma_code : str,
                 f.write(code)
             obj_filename = output_filename + '.o'
             log = run(['cl.exe', '/c', '/O2', f'/Fo:{obj_filename}', tmp_c_filename],
-                encoding='utf-8',
+                encoding='latin-1',
                 capture_output=True)
             if log.returncode != 0:
                 print(log.stderr)
             exports = [f'/EXPORT:{f.id}' for f in funcs.values()]
             log = run(['link.exe', '/DLL', f'/OUT:{output_filename}', '/OPT:REF', '/OPT:ICF', *exports, obj_filename],
-                encoding='utf-8',
+                encoding='latin-1',
                 capture_output=True)
             if log.returncode != 0:
                 print(log.stderr)
@@ -150,7 +150,7 @@ def compile(loma_code : str,
         else:
             log = run(['gcc', '-shared', '-fPIC', '-o', output_filename, '-O2', '-x', 'c', '-'],
                 input = code,
-                encoding='utf-8',
+                encoding='latin-1',
                 capture_output=True)
             if log.returncode != 0:
                 print(log.stderr)
@@ -174,7 +174,7 @@ void atomic_add(float *ptr, float val) {
         obj_filename = output_filename + '.o'
         log = run(['ispc', '--pic', '-o', obj_filename, '-O2', '-'],
             input = code,
-            encoding='utf-8',
+            encoding='latin-1',
             capture_output=True)
         if log.returncode != 0:
             print(log.stderr)
@@ -188,24 +188,24 @@ void atomic_add(float *ptr, float val) {
 
         if platform.system() == 'Windows':
             log = run(['cl.exe', '/std:c++17', '/c', '/O2', f'/Fo:{tasksys_obj_path}', tasksys_path],
-                encoding='utf-8',
+                encoding='latin-1',
                 capture_output=True)
             if log.returncode != 0:
                 print(log.stderr)
             exports = [f'/EXPORT:{f.id}' for f in funcs.values()]
             log = run(['link.exe', '/DLL', f'/OUT:{output_filename}', '/OPT:REF', '/OPT:ICF', *exports, obj_filename, tasksys_obj_path],
-                encoding='utf-8',
+                encoding='latin-1',
                 capture_output=True)
             if log.returncode != 0:
                 print(log.stderr)
         else:
             log = run(['g++', '-std=c++17', '-c', '-O2', '-o', tasksys_obj_path, tasksys_path],
-                encoding='utf-8',
+                encoding='latin-1',
                 capture_output=True)
             if log.returncode != 0:
                print(log.stderr)
             log = run(['g++', '-fPIC', '-shared', '-o', output_filename, '-O2', obj_filename, tasksys_obj_path],
-                encoding='utf-8',
+                encoding='latin-1',
                 capture_output=True)
     elif target == 'opencl':
         code = codegen_opencl.codegen_opencl(structs, funcs)

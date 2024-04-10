@@ -75,6 +75,7 @@ class TypeInferencer(irmutator.IRMutator):
         self.current_func_args = list(node.args)
         for i, arg in enumerate(node.args):
             t = fill_in_struct_info(arg.t, self.structs)
+
             self.var_types[arg.id] = t
             self.current_func_args[i] = loma_ir.Arg(arg.id, t, arg.i)
         new_args = self.current_func_args
@@ -113,6 +114,7 @@ class TypeInferencer(irmutator.IRMutator):
         t = dec.t
         if isinstance(t, loma_ir.Struct) and len(t.members) == 0:
             t = self.structs[t.id]
+
         self.var_types[dec.target] = t
         if dec.val is not None:
             new_val = self.mutate_expr(dec.val)
@@ -244,9 +246,9 @@ class TypeInferencer(irmutator.IRMutator):
             t = inferred_type)
 
     def mutate_call(self, call):
+
         args = [self.mutate_expr(arg) for arg in call.args]
         inf_type = None
-
         # Check for intrinsic functions
         if call.id == 'sin' or \
                 call.id == 'cos' or \
@@ -266,7 +268,7 @@ class TypeInferencer(irmutator.IRMutator):
                 raise error.CallTypeMismatch(call)
             inf_type = loma_ir.Float()
         elif call.id == 'float2int':
-            if len(args) != 1 or args[0].t != loma_ir.Float():
+            if len(args) != 1 or args[0].t != loma_ir.Float():              
                 raise error.CallTypeMismatch(call)
             inf_type = loma_ir.Int()
         elif call.id == 'pow':

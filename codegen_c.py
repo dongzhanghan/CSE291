@@ -192,6 +192,7 @@ class CCodegenVisitor(irvisitor.IRVisitor):
                     case _:
                         assert False
             case loma_ir.Call():
+                
                 if node.id == 'thread_id':
                     return '__work_id'
                 elif node.id == 'atomic_add':
@@ -215,6 +216,7 @@ class CCodegenVisitor(irvisitor.IRVisitor):
                 elif func_id == 'int2float':
                     func_id = '(float)'
                 elif func_id == 'float2int':
+                    
                     func_id = '(int)'
 
                 ret = f'{func_id}('

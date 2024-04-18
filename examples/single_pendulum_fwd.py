@@ -7,6 +7,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 import compiler
 import ctypes
+import math
 
 with open('loma_code/pendulum_fwd.py') as f:
     structs, lib = compiler.compile(f.read(),
@@ -73,5 +74,5 @@ def visualize():
     return animation.FuncAnimation(fig, animate, frames=400, interval=fps, blit=True)
 
 anim = visualize()
-anim.save('single_pendulum_fwd.mp4')
+#anim.save('single_pendulum_fwd.mp4')
 plt.show()

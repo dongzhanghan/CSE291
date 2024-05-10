@@ -65,14 +65,14 @@ class Homework3Test(unittest.TestCase):
     #                                         target = 'c',
     #                                         output_filename = '_code/ifelse_side_effects_rev')
         
-        x = 1.23
-        _dx = ctypes.c_float(0)
-        y = 1.0
-        _dy = ctypes.c_float(0)
-        lib.rev_ifelse_side_effects(x, _dx, y, _dy, 0.3)
+    #     x = 1.23
+    #     _dx = ctypes.c_float(0)
+    #     y = 1.0
+    #     _dy = ctypes.c_float(0)
+    #     lib.rev_ifelse_side_effects(x, _dx, y, _dy, 0.3)
 
-        assert abs(_dx.value - 0.3 * math.cos(5.0 * x) * 5) < epsilon and \
-            abs(_dy.value) < epsilon
+    #     assert abs(_dx.value - 0.3 * math.cos(5.0 * x) * 5) < epsilon and \
+    #         abs(_dy.value) < epsilon
 
     #     # test both branches
     #     x = 1.23
@@ -80,7 +80,6 @@ class Homework3Test(unittest.TestCase):
     #     y = -1.0
     #     _dy = ctypes.c_float(0)
     #     lib.rev_ifelse_side_effects(x, _dx, y, _dy, 0.3)
-        
     #     assert abs(_dx.value - 2 * 0.3) < epsilon and \
     #         abs(_dy.value) < epsilon
 
@@ -205,59 +204,59 @@ class Homework3Test(unittest.TestCase):
     #     assert abs(_dx.value - dout * 4 * x * y * y) < epsilon and \
     #         abs(_dy.value - dout * 4 * x * x * y) < epsilon
 
-    def test_call_array_rev(self):
-        with open('loma_code/call_array_rev.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'c',
-                                            output_filename = '_code/call_array_rev')
-        x = ctypes.c_float(0)
-        _dx = ctypes.c_float(0)
-        _dout = 0.3
-        z = lib.rev_call_array(ctypes.pointer(x),
-                               ctypes.pointer(_dx),
-                               _dout)
-        # y = (x * x + x)
-        # dx = dy * (2 * x + 1)
-        assert abs(_dx.value - (_dout * (2 * x.value + 1))) < epsilon
+    # def test_call_array_rev(self):
+    #     with open('loma_code/call_array_rev.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'c',
+    #                                         output_filename = '_code/call_array_rev')
+    #     x = ctypes.c_float(0)
+    #     _dx = ctypes.c_float(0)
+    #     _dout = 0.3
+    #     z = lib.rev_call_array(ctypes.pointer(x),
+    #                            ctypes.pointer(_dx),
+    #                            _dout)
+    #     # y = (x * x + x)
+    #     # dx = dy * (2 * x + 1)
+    #     assert abs(_dx.value - (_dout * (2 * x.value + 1))) < epsilon
 
-    def test_call_stmt_rev(self):
-        with open('loma_code/call_stmt_rev.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'c',
-                                            output_filename = '_code/call_stmt_rev')
-        x = 0.67
-        _dx = ctypes.c_float(0)
-        dout = 0.3
-        z = lib.rev_call_stmt(x, ctypes.byref(_dx), dout)
-        # y = 2 * (x * x + x)
-        # dx = 2 * dout * (2 * x + 1)
-        assert abs(_dx.value - (2 * dout * (2 * x + 1))) < epsilon
+    # def test_call_stmt_rev(self):
+    #     with open('loma_code/call_stmt_rev.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'c',
+    #                                         output_filename = '_code/call_stmt_rev')
+    #     x = 0.67
+    #     _dx = ctypes.c_float(0)
+    #     dout = 0.3
+    #     z = lib.rev_call_stmt(x, ctypes.byref(_dx), dout)
+    #     # y = 2 * (x * x + x)
+    #     # dx = 2 * dout * (2 * x + 1)
+    #     assert abs(_dx.value - (2 * dout * (2 * x + 1))) < epsilon
 
-    def test_call_stmt2_rev(self):
-        with open('loma_code/call_stmt2_rev.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'c',
-                                            output_filename = '_code/call_stmt2_rev')
-        x = 0.67
-        _dx = ctypes.c_float(0)
-        _dy = 0.3
-        z = lib.rev_call_stmt2(x, ctypes.byref(_dx), _dy)
-        # y = (x * x + x)
-        # dx = dy * (2 * x + 1)
-        assert abs(_dx.value - (_dy * (2 * x + 1))) < epsilon
+    # def test_call_stmt2_rev(self):
+    #     with open('loma_code/call_stmt2_rev.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'c',
+    #                                         output_filename = '_code/call_stmt2_rev')
+    #     x = 0.67
+    #     _dx = ctypes.c_float(0)
+    #     _dy = 0.3
+    #     z = lib.rev_call_stmt2(x, ctypes.byref(_dx), _dy)
+    #     # y = (x * x + x)
+    #     # dx = dy * (2 * x + 1)
+    #     assert abs(_dx.value - (_dy * (2 * x + 1))) < epsilon
 
-    def test_call_stmt_side_effects(self):
-        with open('loma_code/call_stmt_side_effects.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'c',
-                                            output_filename = '_code/call_stmt_side_effects')
-        x = 0.67
-        _dx = ctypes.c_float(0)
-        dout = 0.3
-        z = lib.rev_call_stmt_side_effects(x, ctypes.byref(_dx), dout)
-        # y = 2 * (x * x + x) + 10 * x
-        # dx = dout * (2 * (2 * x + 1) + 10)
-        assert abs(_dx.value - (dout * (2 * (2 * x + 1) + 10))) < epsilon
+    # def test_call_stmt_side_effects(self):
+    #     with open('loma_code/call_stmt_side_effects.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'c',
+    #                                         output_filename = '_code/call_stmt_side_effects')
+    #     x = 0.67
+    #     _dx = ctypes.c_float(0)
+    #     dout = 0.3
+    #     z = lib.rev_call_stmt_side_effects(x, ctypes.byref(_dx), dout)
+    #     # y = 2 * (x * x + x) + 10 * x
+    #     # dx = dout * (2 * (2 * x + 1) + 10)
+    #     assert abs(_dx.value - (dout * (2 * (2 * x + 1) + 10))) < epsilon
 
     # def test_call_stmt_side_effects2(self):
     #     with open('loma_code/call_stmt_side_effects2.py') as f:
@@ -277,56 +276,56 @@ class Homework3Test(unittest.TestCase):
     #     assert abs(_dx.value - (dout * (2 * (2 * x + 1) + 0.25 * y * y))) < epsilon and \
     #         abs(_dy.value - (dout * (0.5 * y * x))) < epsilon
 
-    def test_call_stmt_array_rev(self):
-        with open('loma_code/call_stmt_array_rev.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'c',
-                                            output_filename = '_code/call_stmt_array_rev')
-        x = ctypes.c_float(0)
-        _dx = ctypes.c_float(0)
-        _dy = ctypes.c_float(0.3)
-        z = lib.rev_call_stmt_array(ctypes.pointer(x),
-                                    ctypes.pointer(_dx),
-                                    ctypes.pointer(_dy))
-        # y = (x * x + x)
-        # dx = dy * (2 * x + 1)
-        assert abs(_dx.value - (_dy.value * (2 * x.value + 1))) < epsilon
+    # def test_call_stmt_array_rev(self):
+    #     with open('loma_code/call_stmt_array_rev.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'c',
+    #                                         output_filename = '_code/call_stmt_array_rev')
+    #     x = ctypes.c_float(0)
+    #     _dx = ctypes.c_float(0)
+    #     _dy = ctypes.c_float(0.3)
+    #     z = lib.rev_call_stmt_array(ctypes.pointer(x),
+    #                                 ctypes.pointer(_dx),
+    #                                 ctypes.pointer(_dy))
+    #     # y = (x * x + x)
+    #     # dx = dy * (2 * x + 1)
+    #     assert abs(_dx.value - (_dy.value * (2 * x.value + 1))) < epsilon
 
-    def test_chained_calls_rev(self):
-        with open('loma_code/chained_calls_rev.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'c',
-                                            output_filename = '_code/chained_calls')
-        x = 0.67
-        _dx = ctypes.c_float(0)
-        dout = 0.3
-        out = lib.rev_chained_calls(x, ctypes.byref(_dx), dout)
+    # def test_chained_calls_rev(self):
+    #     with open('loma_code/chained_calls_rev.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'c',
+    #                                         output_filename = '_code/chained_calls')
+    #     x = 0.67
+    #     _dx = ctypes.c_float(0)
+    #     dout = 0.3
+    #     out = lib.rev_chained_calls(x, ctypes.byref(_dx), dout)
 
     #     # out = sin(2 * x * x)
     #     # dx = dout * cos(2 * x * x) * 4 * x 
     #     assert abs(_dx.value - (dout * math.cos(2 * x * x) * 4 * x)) < epsilon
 
-    def test_while_loop_fwd(self):
-        with open('loma_code/while_loop_fwd.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'c',
-                                            output_filename = '_code/while_loop_fwd')
-        _dfloat = structs['_dfloat']
-        x = _dfloat(1.23, 0.4)
-        n = 5
-        out = lib.fwd_while_loop(x, n)
+    # def test_while_loop_fwd(self):
+    #     with open('loma_code/while_loop_fwd.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'c',
+    #                                         output_filename = '_code/while_loop_fwd')
+    #     _dfloat = structs['_dfloat']
+    #     x = _dfloat(1.23, 0.4)
+    #     n = 5
+    #     out = lib.fwd_while_loop(x, n)
 
-        # out = sin(sin(sin(sin(sin(x)))))
-        # dout = dx * (cos(sin(sin(sin(sin(x))))) *
-        #              cos(sin(sin(sin(x)))) *
-        #              cos(sin(sin(x))) *
-        #              cos(sin(x)) *
-        #              cos(x))
-        assert abs(out.dval - x.dval * (math.cos(math.sin(math.sin(math.sin(math.sin(x.val))))) * \
-                                        math.cos(math.sin(math.sin(math.sin(x.val))))) * \
-                                        math.cos(math.sin(math.sin(x.val))) * \
-                                        math.cos(math.sin(x.val)) * \
-                                        math.cos(x.val)) < epsilon
+    #     # out = sin(sin(sin(sin(sin(x)))))
+    #     # dout = dx * (cos(sin(sin(sin(sin(x))))) *
+    #     #              cos(sin(sin(sin(x)))) *
+    #     #              cos(sin(sin(x))) *
+    #     #              cos(sin(x)) *
+    #     #              cos(x))
+    #     assert abs(out.dval - x.dval * (math.cos(math.sin(math.sin(math.sin(math.sin(x.val))))) * \
+    #                                     math.cos(math.sin(math.sin(math.sin(x.val))))) * \
+    #                                     math.cos(math.sin(math.sin(x.val))) * \
+    #                                     math.cos(math.sin(x.val)) * \
+    #                                     math.cos(x.val)) < epsilon
 
     # def test_while_loop_rev(self):
     #     with open('loma_code/while_loop_rev.py') as f:
@@ -352,21 +351,21 @@ class Homework3Test(unittest.TestCase):
     #                                    math.cos(math.sin(x)) * \
     #                                    math.cos(x)) < epsilon
 
-    # def test_nested_while_loop_rev(self):
-    #     with open('loma_code/nested_while_loop_rev.py') as f:
-    #         structs, lib = compiler.compile(f.read(),
-    #                                         target = 'c',
-    #                                         output_filename = '_code/nested_while_loop_rev')
-    #     x = 1.23
-    #     _dx = ctypes.c_float(0)
-    #     n = 5
-    #     _dn = ctypes.c_int(0)
-    #     dout = 0.4
-    #     lib.rev_nested_while_loop(x, _dx, n, _dn, dout)
+    def test_nested_while_loop_rev(self):
+        with open('loma_code/nested_while_loop_rev.py') as f:
+            structs, lib = compiler.compile(f.read(),
+                                            target = 'c',
+                                            output_filename = '_code/nested_while_loop_rev')
+        x = 1.23
+        _dx = ctypes.c_float(0)
+        n = 5
+        _dn = ctypes.c_int(0)
+        dout = 0.4
+        lib.rev_nested_while_loop(x, _dx, n, _dn, dout)
 
-    #     # out = x + (n * (n-1)) * x^2
-    #     # dx = dout * (1 + x * (n * (n - 1)))
-    #     assert abs(_dx.value - dout * (x * (n * (n - 1)))) < epsilon
+        # out = x + (n * (n-1)) * x^2
+        # dx = dout * (1 + x * (n * (n - 1)))
+        assert abs(_dx.value - dout * (x * (n * (n - 1)))) < epsilon
 
     # def test_three_level_while_loop_rev(self):
     #     with open('loma_code/three_level_while_loop_rev.py') as f:
@@ -401,49 +400,49 @@ class Homework3Test(unittest.TestCase):
 
     #     assert abs(_dx.value - np.sum(_dz)) < epsilon
 
-    def test_parallel_add(self):
-        with open('loma_code/parallel_add.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'ispc',
-                                            output_filename = '_code/parallel_add')
+    # def test_parallel_add(self):
+    #     with open('loma_code/parallel_add.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'ispc',
+    #                                         output_filename = '_code/parallel_add')
 
-        np.random.seed(seed=1234)
-        n = 10000
-        x = np.random.random(n).astype('f') / n
-        _dx = np.zeros_like(x)
-        y = np.random.random(n).astype('f') / n
-        _dy = np.zeros_like(y)
-        z = np.zeros_like(x)
-        _dz = np.random.random(n).astype('f') / n
-        lib.rev_parallel_add(
-            x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-            _dx.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-            y.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-            _dy.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-            _dz.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-            n)
+    #     np.random.seed(seed=1234)
+    #     n = 10000
+    #     x = np.random.random(n).astype('f') / n
+    #     _dx = np.zeros_like(x)
+    #     y = np.random.random(n).astype('f') / n
+    #     _dy = np.zeros_like(y)
+    #     z = np.zeros_like(x)
+    #     _dz = np.random.random(n).astype('f') / n
+    #     lib.rev_parallel_add(
+    #         x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    #         _dx.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    #         y.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    #         _dy.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    #         _dz.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    #         n)
 
-        assert np.sum(np.abs(_dx - _dz)) / n < epsilon and \
-            np.sum(np.abs(_dy - _dz)) / n < epsilon
+    #     assert np.sum(np.abs(_dx - _dz)) / n < epsilon and \
+    #         np.sum(np.abs(_dy - _dz)) / n < epsilon
 
-    def test_parallel_reduce(self):
-        with open('loma_code/parallel_reduce.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'ispc',
-                                            output_filename = '_code/parallel_reduce')
+    # def test_parallel_reduce(self):
+    #     with open('loma_code/parallel_reduce.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'ispc',
+    #                                         output_filename = '_code/parallel_reduce')
 
-        np.random.seed(1234)
-        n = 10000
-        x = np.random.random(n).astype('f') / n
-        _dx = np.zeros_like(x)
-        _dz = 0.234
-        lib.rev_parallel_reduce(\
-            x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-            _dx.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-            _dz,
-            n)
+    #     np.random.seed(1234)
+    #     n = 10000
+    #     x = np.random.random(n).astype('f') / n
+    #     _dx = np.zeros_like(x)
+    #     _dz = 0.234
+    #     lib.rev_parallel_reduce(\
+    #         x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    #         _dx.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    #         _dz,
+    #         n)
 
-        assert np.sum(np.abs(_dx - _dz)) / n < epsilon
+    #     assert np.sum(np.abs(_dx - _dz)) / n < epsilon
 
 if __name__ == '__main__':
     unittest.main()

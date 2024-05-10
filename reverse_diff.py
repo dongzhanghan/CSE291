@@ -224,10 +224,30 @@ def reverse_diff(diff_func_id : str,
             self.var_to_dvar = {}
             self.type_cache_size = {}
             self.type_to_stack_and_ptr_names = {}
+            self.while_loop_counter = 0
+            self.max_iter = 0
+            self.inloop = False
 
         def mutate_return(self, node):
             return []
         
+        def mutate_while(self,node):
+            self.inloop = True
+            self.max_iter = node.max_iter
+            self.while_loop_counter += 1
+            cond = node.cond
+            new_body = [self.mutate_stmt(stmt) for stmt in node.body]
+            # Important: mutate_stmt can return a list of statements. We need to flatten the list.
+            new_body = irmutator.flatten(new_body)
+            if self.while_loop_counter == 1:
+                var = loma_ir.Var("_loop_var_0", t=loma_ir.Int())
+                new_body += [loma_ir.Assign(var,loma_ir.BinaryOp(loma_ir.Add(),var,loma_ir.ConstInt(1),t=loma_ir.Int()))]
+            self.inloop = False
+            return loma_ir.While(\
+                cond,
+                node.max_iter,
+                new_body,
+                lineno = node.lineno)
 
         def mutate_declare(self, node):
             # For each declaration, add another declaration for the derivatives
@@ -237,10 +257,10 @@ def reverse_diff(diff_func_id : str,
                 stmt = []
                 dvar = '_d' + node.target + '_' + random_id_generator()
                 self.var_to_dvar[node.target] = dvar
-                return node, loma_ir.Declare(\
+                return [node, loma_ir.Declare(\
                     dvar,
                     node.t,
-                    lineno = node.lineno)
+                    lineno = node.lineno)]
 
             
             else:
@@ -284,21 +304,28 @@ def reverse_diff(diff_func_id : str,
             else:
                 self.cache_vars_list[node.val.t] = [(cache_var_expr, node.target)]
             if node.val.t in self.type_cache_size:
-                self.type_cache_size[node.val.t] += 1
+                if self.inloop:
+                    self.type_cache_size[node.val.t] += pow(self.max_iter,self.while_loop_counter)
+                else:
+                    self.type_cache_size[node.val.t] += 1
+
             else:
-                self.type_cache_size[node.val.t] = 1
+                if self.inloop:
+                    self.type_cache_size[node.val.t] = pow(self.max_iter,self.while_loop_counter)
+                else:
+                    self.type_cache_size[node.val.t] = 1
             return [cache_primal, stack_advance, assign_primal]
 
     # HW2 happens here. Modify the following IR mutators to perform
     # reverse differentiation.
     class RevDiffMutator(irmutator.IRMutator):
         def mutate_function_def(self, node):
-            
             random.seed(hash(node.id))
             # Each input argument is followed by an output (the adjoint)
             # Each output is turned into an input
             # The return value turn into an input
             self.var_to_dvar = {}
+            self.while_loop_counter = 0
             new_args = []
             self.output_args = set()
             
@@ -327,14 +354,18 @@ def reverse_diff(diff_func_id : str,
             self.cache_vars_list = fm.cache_vars_list
             self.type_cache_size = fm.type_cache_size
             self.type_to_stack_and_ptr_names = fm.type_to_stack_and_ptr_names
+            self.while_loop_counter = fm.while_loop_counter
 
             tmp_declares = []
             for t, exprs in fm.cache_vars_list.items():
                 t_str = type_to_string(t)
                 stack_name, stack_ptr_name = self.type_to_stack_and_ptr_names[t_str]
                 tmp_declares.append(loma_ir.Declare(stack_name,
-                    loma_ir.Array(t, len(exprs))))
+                    loma_ir.Array(t, self.type_cache_size[t])))
                 tmp_declares.append(loma_ir.Declare(stack_ptr_name,
+                    loma_ir.Int(), loma_ir.ConstInt(0)))
+            if (self.while_loop_counter ==1):
+                tmp_declares.append(loma_ir.Declare("_loop_var_0",
                     loma_ir.Int(), loma_ir.ConstInt(0)))
             mutated_forward = tmp_declares + mutated_forward
 
@@ -368,7 +399,6 @@ def reverse_diff(diff_func_id : str,
                 return []
 
         def mutate_assign(self, node):
-            print(node)
             if node.val.t == loma_ir.Int():
                 stmts = []
                 # restore the previous value of this assignment
@@ -428,8 +458,21 @@ def reverse_diff(diff_func_id : str,
             return super().mutate_call_stmt(node)
 
         def mutate_while(self, node):
-            # HW3: TODO
-            return super().mutate_while(node)
+            
+            if self.while_loop_counter == 1:
+                var = loma_ir.Var("_loop_var_0", t=loma_ir.Int())
+                cond = loma_ir.BinaryOp(loma_ir.Greater(),var,loma_ir.ConstInt(0))
+                new_body = [self.mutate_stmt(stmt) for stmt in reversed(node.body)]
+                # Important: mutate_stmt can return a list of statements. We need to flatten the list.
+                new_body = irmutator.flatten(new_body)
+                
+                new_body += [loma_ir.Assign(var,loma_ir.BinaryOp(loma_ir.Sub(),var,loma_ir.ConstInt(1),t=loma_ir.Int()))]
+            self.while_loop_counter -= 1
+            return loma_ir.While(\
+                cond,
+                node.max_iter,
+                new_body,
+                lineno = node.lineno)
 
         def mutate_var(self, node):
             if self.in_assign:

@@ -118,12 +118,8 @@ def forward_diff(diff_func_id : str,
         def mutate_assign(self, node):
             if isinstance(node.val.t, loma_ir.Float):
                 val, dval = self.mutate_expr(node.val)
-                tgt_val, tgt_dval = self.mutate_expr(node.target)
-                assign_primal = loma_ir.Assign(\
-                    tgt_val, val)
-                assign_diff = loma_ir.Assign(\
-                    tgt_dval, dval)
-                return [assign_primal, assign_diff]
+                return loma_ir.Assign(\
+                    node.target, loma_ir.Call("make__dfloat",[val,dval ]))
             else:
                 val, _ = self.mutate_expr(node.val)
                 tgt_val, _ = self.mutate_expr(node.target)

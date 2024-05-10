@@ -130,12 +130,46 @@ def forward_diff(diff_func_id : str,
                 return loma_ir.Assign(tgt_val, val)
 
         def mutate_ifelse(self, node):
-            # HW3: TODO
-            return super().mutate_ifelse(node)
+            new_cond = self.mutate_expr(node.cond)
+            new_then_stmts = [self.mutate_stmt(stmt) for stmt in node.then_stmts]
+            new_else_stmts = [self.mutate_stmt(stmt) for stmt in node.else_stmts]
+            # Important: mutate_stmt can return a list of statements. We need to flatten the lists.
+            new_then_stmts = irmutator.flatten(new_then_stmts)
+            new_else_stmts = irmutator.flatten(new_else_stmts)
+            return loma_ir.IfElse(\
+                new_cond,
+                new_then_stmts,
+                new_else_stmts,
+                lineno = node.lineno)
+        def mutate_call_stmt(self, node):
+            out = []
+            args = funcs[node.call.id].args
+            for arg in args:
+                if arg.i == loma_ir.Out():
+                    out.append(arg.id)
+            dfloat_new_args = []
+            for arg in node.call.args:
+                if arg.id in out:                         
+                    dfloat_new_args.append(arg)
+                else:
+                    new_arg = self.mutate_expr(arg)
+                    dfloat_new_args.append(loma_ir.Call('make__dfloat',new_arg))
+            fw_func_id = func_to_fwd[node.call.id]
+
+            return loma_ir.CallStmt(\
+            loma_ir.Call(fw_func_id,dfloat_new_args),
+            lineno = node.lineno)
 
         def mutate_while(self, node):
-            # HW3: TODO
-            return super().mutate_while(node)
+            cond = node.cond
+            new_body = [self.mutate_stmt(stmt) for stmt in node.body]
+            # Important: mutate_stmt can return a list of statements. We need to flatten the list.
+            new_body = irmutator.flatten(new_body)
+            return loma_ir.While(\
+                cond,
+                node.max_iter,
+                new_body,
+                lineno = node.lineno)
 
         def mutate_const_float(self, node):
             return node, loma_ir.ConstFloat(0.0)
@@ -459,5 +493,34 @@ def forward_diff(diff_func_id : str,
                         lineno = node.lineno,
                         t = node.t)
                     return ret, None
+                
+                case _:
+                    out = []
+                    args = funcs[node.id].args
+                    for arg in args:
+                        if arg.i == loma_ir.Out():
+                            out.append(arg.id)
+                    dfloat_new_args = []
+
+                    for new_arg in new_args:
+                        dfloat_new_args.append(loma_ir.Call('make__dfloat',new_arg))
+                    fw_func_id = func_to_fwd[node.id]
+                    if node.t == loma_ir.Float():
+                        val = loma_ir.StructAccess(loma_ir.Call(fw_func_id,dfloat_new_args),"val")
+                        dval = loma_ir.StructAccess(loma_ir.Call(fw_func_id,dfloat_new_args),"dval")
+                        return val, dval
+                    else:
+                        return loma_ir.Call(fw_func_id,dfloat_new_args),None
+                    
+                
+        def mutate_greater(self, node):
+            left, _ = self.mutate_expr(node.left)
+            right, _ = self.mutate_expr(node.right)
+            return loma_ir.BinaryOp(\
+                loma_ir.Greater(),
+                left,
+                right,
+                lineno = node.lineno,
+                t = node.t)
 
     return FwdDiffMutator().mutate_function_def(func)

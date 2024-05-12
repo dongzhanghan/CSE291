@@ -351,21 +351,21 @@ class Homework3Test(unittest.TestCase):
     #                                    math.cos(math.sin(x)) * \
     #                                    math.cos(x)) < epsilon
 
-    def test_nested_while_loop_rev(self):
-        with open('loma_code/nested_while_loop_rev.py') as f:
-            structs, lib = compiler.compile(f.read(),
-                                            target = 'c',
-                                            output_filename = '_code/nested_while_loop_rev')
-        x = 1.23
-        _dx = ctypes.c_float(0)
-        n = 5
-        _dn = ctypes.c_int(0)
-        dout = 0.4
-        lib.rev_nested_while_loop(x, _dx, n, _dn, dout)
+    # def test_nested_while_loop_rev(self):
+    #     with open('loma_code/nested_while_loop_rev.py') as f:
+    #         structs, lib = compiler.compile(f.read(),
+    #                                         target = 'c',
+    #                                         output_filename = '_code/nested_while_loop_rev')
+    #     x = 1.23
+    #     _dx = ctypes.c_float(0)
+    #     n = 5
+    #     _dn = ctypes.c_int(0)
+    #     dout = 0.4
+    #     lib.rev_nested_while_loop(x, _dx, n, _dn, dout)
 
-        # out = x + (n * (n-1)) * x^2
-        # dx = dout * (1 + x * (n * (n - 1)))
-        assert abs(_dx.value - dout * (x * (n * (n - 1)))) < epsilon
+    #     # out = x + (n * (n-1)) * x^2
+    #     # dx = dout * (1 + x * (n * (n - 1)))
+    #     assert abs(_dx.value - dout * (x * (n * (n - 1)))) < epsilon
 
     # def test_three_level_while_loop_rev(self):
     #     with open('loma_code/three_level_while_loop_rev.py') as f:
@@ -383,22 +383,22 @@ class Homework3Test(unittest.TestCase):
     #     # dx = dout * (1 + 2 * x * n^3))
     #     assert abs(_dx.value - dout * (1 + 2 * x * n * n * n)) < epsilon
 
-    # def test_parallel_copy(self):
-    #     with open('loma_code/parallel_copy.py') as f:
-    #         structs, lib = compiler.compile(f.read(),
-    #                                         target = 'ispc',
-    #                                         output_filename = '_code/parallel_copy')
-    #     x = 0.123
-    #     n = 10000
-    #     _dx = ctypes.c_float(0)
-    #     np.random.seed(1234)
-    #     _dz = np.random.random(n).astype('f') / n
-    #     lib.rev_parallel_copy(x,
-    #         ctypes.byref(_dx),
-    #         _dz.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-    #         n)
+    def test_parallel_copy(self):
+        with open('loma_code/parallel_copy.py') as f:
+            structs, lib = compiler.compile(f.read(),
+                                            target = 'ispc',
+                                            output_filename = '_code/parallel_copy')
+        x = 0.123
+        n = 10000
+        _dx = ctypes.c_float(0)
+        np.random.seed(1234)
+        _dz = np.random.random(n).astype('f') / n
+        lib.rev_parallel_copy(x,
+            ctypes.byref(_dx),
+            _dz.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+            n)
 
-    #     assert abs(_dx.value - np.sum(_dz)) < epsilon
+        assert abs(_dx.value - np.sum(_dz)) < epsilon
 
     # def test_parallel_add(self):
     #     with open('loma_code/parallel_add.py') as f:

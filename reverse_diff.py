@@ -346,7 +346,7 @@ def reverse_diff(diff_func_id : str,
         def mutate_call_stmt(self, node):
             print(node)
             if node.call.id == "atomic_add":
-                return node
+                return [loma_ir.CallStmt(loma_ir.Call("atomic_add",node.call.args))]
             count = []
             args = funcs[node.call.id].args
             for i in range(len(args)):
@@ -577,7 +577,7 @@ def reverse_diff(diff_func_id : str,
 
         def mutate_call_stmt(self, node):
             if node.call.id == "atomic_add":
-                return node
+                return [loma_ir.CallStmt(loma_ir.Call("atomic_add",node.call.args))]
             count = []
             args = funcs[node.call.id].args
             for i in range(len(args)):
@@ -898,6 +898,7 @@ def reverse_diff(diff_func_id : str,
                 case 'float2int':
                     # don't propagate the derivatives
                     return []
+
                 case _:
                     new_args = []
                     if self.in_assign:

@@ -343,10 +343,10 @@ def reverse_diff(diff_func_id : str,
                     self.type_cache_size[node.val.t] = 1
             return [cache_primal, stack_advance, assign_primal]
         
+        
         def mutate_call_stmt(self, node):
-            print(node)
             if node.call.id == "atomic_add":
-                return [loma_ir.CallStmt(loma_ir.Call("atomic_add",node.call.args))]
+                return []
             count = []
             args = funcs[node.call.id].args
             for i in range(len(args)):
@@ -577,7 +577,7 @@ def reverse_diff(diff_func_id : str,
 
         def mutate_call_stmt(self, node):
             if node.call.id == "atomic_add":
-                return [loma_ir.CallStmt(loma_ir.Call("atomic_add",node.call.args))]
+                return self.mutate_expr(node.call)
             count = []
             args = funcs[node.call.id].args
             for i in range(len(args)):
@@ -615,7 +615,7 @@ def reverse_diff(diff_func_id : str,
                 print(arg.t)
                 if arg.t != loma_ir.Array:
                     stmts += assign_zero(loma_ir.Var(dvar, t= arg.t))
-            print(stmts)
+
             return stmts
 
         def mutate_while(self, node):
@@ -898,6 +898,10 @@ def reverse_diff(diff_func_id : str,
                 case 'float2int':
                     # don't propagate the derivatives
                     return []
+                case "atomic_add":
+                    arg1 = node.args[0]
+                    arg2 = var_to_differential(node.args[1], self.var_to_dvar)
+                    return loma_ir.CallStmt(loma_ir.Call("atomic_add",[arg2,arg1]))
 
                 case _:
                     new_args = []

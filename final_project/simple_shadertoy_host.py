@@ -15,7 +15,17 @@ if __name__ == '__main__':
                                   output_filename = '_code/simple_shadertoy')
     w = 400
     h = 225
-    img = np.zeros([h, w, 3], dtype = np.single)
-    lib.diff_shadertoy(w, h, img.ctypes.data_as(ctypes.POINTER(structs['Vec3'])))
-    plt.imshow(img)
-    plt.show()
+    loss = np.zeros([h, w, 3], dtype = np.single)
+    img = np.ones([h, w, 3], dtype = np.single)
+    x = 0.5
+    y = 0.5
+    z = 0.5
+    grad_f = lib.diff_shadertoy
+    step_size = 1e-2
+    for i in range(100):
+        grad_f(img.ctypes.data_as(ctypes.POINTER(structs['Vec3'])),w, h, loss.ctypes.data_as(ctypes.POINTER(structs['Vec3'])))
+        for j in range(w):
+            for k in range(h):
+                img[0].val -= step_size * loss[0].val
+
+    

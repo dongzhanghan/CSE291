@@ -21,12 +21,35 @@ if __name__ == '__main__':
     grad_f = lib.diff_shadertoy
     step_size = 1e-2
     d_vec3 = structs["Vec3"]
-    for i in range(1000):
-        loss = grad_f(d_vec3(x,y,z),w, h)
-        x -= step_size * loss.x
-        y -= step_size * loss.y
-        z -= step_size * loss.z
 
+    loss_r = []
+    loss_g = []
+    loss_b = []
+    for i in range(1000):
+        loss = d_vec3(0,0,0)
+        gradient = grad_f(d_vec3(x,y,z),w, h, loss)
+        x -= step_size * gradient.x
+        y -= step_size * gradient.y
+        z -= step_size * gradient.z
+        loss_r.append(loss.x)
+        loss_g.append(loss.y)
+        loss_b.append(loss.z)
+    iterations = list(range(1000))  # 假设我们有100次迭代
+    
+    plt.figure(figsize=(10, 6))
+    plt.plot(iterations, loss_r, label='R Loss', color='red', linewidth=2)
+    plt.plot(iterations, loss_g, label='G Loss', color='green', linewidth=2)
+    plt.plot(iterations, loss_b, label='B Loss', color='blue', linewidth=2)
+    # 添加标题和标签
+    plt.title('Loss Function Over Iterations')
+    plt.xlabel('Iterations')
+    plt.ylabel('Loss Value')
+    plt.legend()
+
+    # 显示图表
+    plt.grid(True)
+    plt.show()
+    print(x,y,z)
 
 
     

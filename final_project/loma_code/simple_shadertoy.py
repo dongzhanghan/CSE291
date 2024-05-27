@@ -16,12 +16,12 @@ def shadertoy(col: In[Vec3])-> Vec3:
 d_shadertoy = fwd_diff(shadertoy)
 
 
-def diff_shadertoy(col: In[Vec3], w : In[int], h : In[int])->Vec3:
+def diff_shadertoy(col: In[Vec3], w : In[int], h : In[int], loss:Out[Vec3])->Vec3:
     y : int = 0
     x : int
     d_color : Diff[Vec3]
     d_col: Diff[Vec3]
-    loss: Vec3
+    gradient: Vec3
     while (y < h, max_iter := 4096):
         x = 0
         while (x < w, max_iter := 4096):
@@ -32,15 +32,18 @@ def diff_shadertoy(col: In[Vec3], w : In[int], h : In[int])->Vec3:
             d_col.y.dval = 1
             d_col.z.dval = 1
             d_color = d_shadertoy(d_col)
-            loss.x = loss.x+d_color.x.dval*2*(d_color.x.val-0.4)
-            loss.y = loss.y+d_color.y.dval*2*(d_color.y.val-0.8)
-            loss.z = loss.z+d_color.z.dval*2*(d_color.z.val-0.6)
+            gradient.x = gradient.x+d_color.x.dval*2*(d_color.x.val-0.4)
+            loss.x = loss.x+ (d_color.x.val-0.4)*(d_color.x.val-0.4)
+            gradient.y = gradient.y+d_color.y.dval*2*(d_color.y.val-0.8)
+            loss.y = loss.y+ (d_color.y.val-0.8)*(d_color.y.val-0.8)
+            gradient.z = gradient.z+d_color.z.dval*2*(d_color.z.val-0.6)
+            loss.z = loss.z+ (d_color.z.val-0.6)*(d_color.z.val-0.6)
             x = x + 1
         y = y + 1
-    loss.x = loss.x/(w*h)
-    loss.y = loss.y/(w*h)
-    loss.z = loss.z/(w*h)
-    return loss
+    gradient.x = gradient.x/(w*h)
+    gradient.y = gradient.y/(w*h)
+    gradient.z = gradient.z/(w*h)
+    return gradient
 
 
 

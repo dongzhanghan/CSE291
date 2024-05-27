@@ -47,9 +47,9 @@ def sphere_isect(sph : In[Sphere], ray : In[Ray]) -> float:
         ret_dist = (-b - sqrt(discriminant)) / (2 * a)
     return ret_dist
 
-def ray_color(ray : In[Ray], radius: In[float]) -> Vec3:
+def ray_color(ray : In[Ray], center: In[Vec3], radius: In[float]) -> Vec3:
     sph : Sphere
-    sph.center = make_vec3(0, 0, -1)
+    sph.center = center
     sph.radius = radius
 
     ret_color : Vec3
@@ -70,7 +70,10 @@ def ray_color(ray : In[Ray], radius: In[float]) -> Vec3:
 
 d_ray_color = fwd_diff(ray_color)
 
-def diff_shadertoy(w : In[int], h : In[int], cur_radius : In[float], target_radius : In[float], image : Out[Array[Vec3]], loss:Out[Vec3])->Vec3:
+def diff_shadertoy(w : In[int], h : In[int], 
+                   cur_radius : In[float], target_radius : In[float], 
+                   cur_center : In[Vec3], target_center: In[Vec3],
+                   image : Out[Array[Vec3]], loss:Out[Vec3])->Vec3:
     # Camera setup
     aspect_ratio : float = int2float(w) / int2float(h)
     focal_length : float = 1.0
@@ -98,9 +101,20 @@ def diff_shadertoy(w : In[int], h : In[int], cur_radius : In[float], target_radi
     ray_dir : Vec3
     d_color : Diff[Vec3]
     d_color_target : Diff[Vec3]
+
     d_cur_radius : Diff[float] = make__dfloat(cur_radius, 1)
     d_target_radius : Diff[float] = make__dfloat(target_radius, 1)
+    d_cur_center : Diff[Vec3] 
+    d_cur_center.x = make__dfloat(cur_center.x, 1)
+    d_cur_center.y = make__dfloat(cur_center.y, 1)
+    d_cur_center.z = make__dfloat(cur_center.z, 1)
+    d_target_center : Diff[Vec3]
+    d_target_center.x = make__dfloat(target_center.x, 1)
+    d_target_center.y = make__dfloat(target_center.y, 1)
+    d_target_center.z = make__dfloat(target_center.z, 1)
+
     gradient: Vec3
+
     while (y < h, max_iter := 4096):
         x = 0
         while (x < w, max_iter := 4096):
@@ -113,8 +127,8 @@ def diff_shadertoy(w : In[int], h : In[int], cur_radius : In[float], target_radi
             d_ray.dir.x.val = ray_dir.x
             d_ray.dir.y.val = ray_dir.y
             d_ray.dir.z.val = ray_dir.z
-            d_color = d_ray_color(d_ray, d_cur_radius)
-            d_color_target = d_ray_color(d_ray, d_target_radius)
+            d_color = d_ray_color(d_ray, d_cur_center, d_cur_radius)
+            d_color_target = d_ray_color(d_ray, d_target_center, d_target_radius)
             image[w * y + x].x = d_color.x.dval
             image[w * y + x].y = d_color.y.dval
             image[w * y + x].z = d_color.z.dval

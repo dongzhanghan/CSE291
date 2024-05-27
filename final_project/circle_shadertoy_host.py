@@ -40,17 +40,22 @@ if __name__ == '__main__':
     axes[fig_row-1, 1].axis("off")
     axes[fig_row-1, 1].set_title("Target image")
 
-    for i in range(25): #range(1000):
+    for i in range(1000):
         loss = np.zeros([h, w, 3], dtype = np.single)
         grad_f(w, h, 
                cur_img.ctypes.data_as(ctypes.POINTER(structs['Vec3'])),
                target_img.ctypes.data_as(ctypes.POINTER(structs['Vec3'])), 
                loss.ctypes.data_as(ctypes.POINTER(structs['Vec3'])))
         cur_img -= step_size * loss
-        axes[i // fig_col, i % fig_col].imshow(cur_img)
-        axes[i // fig_col, i % fig_col].axis("off")
-        axes[i // fig_col, i % fig_col].set_title("i = " + str(i))
+        if i % 40 == 0:
+            j = i // 40
+            axes[j // fig_col, j % fig_col].imshow(cur_img)
+            axes[j // fig_col, j % fig_col].axis("off")
+            axes[j // fig_col, j % fig_col].set_title("i = " + str(i))
     
+    axes[fig_row-1, 2].imshow(cur_img)
+    axes[fig_row-1, 2].axis("off")
+    axes[fig_row-1, 2].set_title("1000 iterations")
     plt.subplots_adjust(wspace=0.4, hspace=0.4)
     plt.show()
 

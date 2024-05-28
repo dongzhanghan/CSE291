@@ -33,10 +33,8 @@ if __name__ == '__main__':
     center_y = []
     center_z = []
 
-    fig_row = 10
-    fig_col = 5
-    fig, axes = plt.subplots(fig_row, fig_col, figsize=(8, 8))
-    for i in range(10000):
+    epoch = 2000
+    for i in range(epoch):
         loss = ctypes.c_float(0.0)
         gradient = grad_f(w, h, cur_radius, target_radius, cur_center, target_center, img_x.ctypes.data_as(ctypes.POINTER(structs['Vec3'])), img_y.ctypes.data_as(ctypes.POINTER(structs['Vec3'])),loss)
         #cur_radius -= step_size * (gradient.x + gradient.y + gradient.z) / 3
@@ -46,26 +44,18 @@ if __name__ == '__main__':
         #radii.append(cur_radius)
         center_x.append(cur_center.x)
         center_y.append(cur_center.y)
-        if (i < 10 or i % 100 == 0):
-            print("cur_radius at iteration " + str(i) + " is " + str(cur_radius))
-            print("cur_center is (" + str(cur_center.x) + ", " + str(cur_center.y) + ", " + str(cur_center.z) + ")")
-            print("gradient is " + str(gradient.x) + ", " + str(gradient.y) + ", " + str(gradient.z))
-        if i % 200 == 0:
-            j = i // 200
-            axes[j // fig_col, j % fig_col].imshow(img_x)
-            axes[j // fig_col, j % fig_col].axis("off")
-            axes[j // fig_col, j % fig_col].set_title("i = " + str(i))
-    #plt.subplots_adjust(wspace=0.4, hspace=0.4)
-    plt.show()
+        #print("cur_radius at iteration " + str(i) + " is " + str(cur_radius))
+        #print("cur_center is (" + str(cur_center.x) + ", " + str(cur_center.y) + ", " + str(cur_center.z) + ")")
+        #print("gradient is " + str(gradient.x) + ", " + str(gradient.y) + ", " + str(gradient.z))
 
-    iterations = list(range(10000))
+    iterations = list(range(epoch))
     plt.figure(figsize=(10, 6))
     plt.plot(iterations, center_x, label='center x', color='blue', linewidth=2)
     plt.plot(iterations, center_y, label='center y', color='red', linewidth=2)
     # plt.plot(iterations, radii, label='radius', color='red', linewidth=2)
-    plt.title('Radius Over Iterations')
+    plt.title('Center Over Iterations')
     plt.xlabel('Iterations')
-    plt.ylabel('Radius')
+    plt.ylabel('Center')
     plt.legend()
 
     plt.grid(True)

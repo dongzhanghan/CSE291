@@ -109,7 +109,7 @@ def diff_shadertoy(w : In[int], h : In[int],
 
     d_cur_radius : Diff[float] = make__dfloat(cur_radius, 0)
     d_cur_center : Diff[Vec3] 
-    d_cur_center.z = make__dfloat(-1, 1) # fix z value at -1; we consider 2D center only
+    d_cur_center.z = make__dfloat(-1, 0) # fix z value at -1; we consider 2D center only
 
     gradient_x: Vec3
     gradient_y: Vec3

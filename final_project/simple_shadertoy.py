@@ -34,19 +34,18 @@ if __name__ == '__main__':
         loss_r.append(loss.x)
         loss_g.append(loss.y)
         loss_b.append(loss.z)
-    iterations = list(range(1000))  # 假设我们有100次迭代
+    iterations = list(range(1000))  
     
     plt.figure(figsize=(10, 6))
     plt.plot(iterations, loss_r, label='R Loss', color='red', linewidth=2)
     plt.plot(iterations, loss_g, label='G Loss', color='green', linewidth=2)
     plt.plot(iterations, loss_b, label='B Loss', color='blue', linewidth=2)
-    # 添加标题和标签
+
     plt.title('Loss Function Over Iterations')
     plt.xlabel('Iterations')
     plt.ylabel('Loss Value')
     plt.legend()
-
-    # 显示图表
+    
     plt.grid(True)
     plt.show()
     print(x,y,z)

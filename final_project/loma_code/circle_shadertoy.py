@@ -3,6 +3,12 @@ class Vec3:
     y : float
     z : float
 
+class Vec4:
+    x : float
+    y : float
+    z : float
+    w : float
+
 
 class Sphere:
     center : Vec3
@@ -17,6 +23,14 @@ def make_vec3(x : In[float], y : In[float], z : In[float]) -> Vec3:
     ret.x = x
     ret.y = y
     ret.z = z
+    return ret
+
+def make_vec4(x : In[float], y : In[float], z : In[float], w: In[float]) -> Vec4:
+    ret : Vec4
+    ret.x = x
+    ret.y = y
+    ret.z = z
+    ret.w = w
     return ret
 
 def add(a : In[Vec3], b : In[Vec3]) -> Vec3:
@@ -77,7 +91,7 @@ d_ray_color = fwd_diff(ray_color)
 def diff_shadertoy(w : In[int], h : In[int], 
                    cur_radius : In[float], target_radius : In[float], 
                    cur_center : In[Vec3], target_center: In[Vec3],
-                   image_x : Out[Array[Vec3]],image_y: Out[Array[Vec3]], loss:Out[float])->Vec3:
+                    loss:Out[float])->Vec4:
     # Camera setup
     aspect_ratio : float = int2float(w) / int2float(h)
     focal_length : float = 1.0
@@ -109,10 +123,14 @@ def diff_shadertoy(w : In[int], h : In[int],
 
     d_cur_radius : Diff[float] = make__dfloat(cur_radius, 0)
     d_cur_center : Diff[Vec3] 
-    d_cur_center.z = make__dfloat(-1, 0) # fix z value at -1; we consider 2D center only
+    d_cur_center.x = make__dfloat(cur_center.x, 0)
+    d_cur_center.y = make__dfloat(cur_center.y, 0)
+    d_cur_center.z = make__dfloat(cur_center.z, 0)
 
     gradient_x: Vec3
     gradient_y: Vec3
+    gradient_z: Vec3
+    gradient_r: Vec3
     while (y < h, max_iter := 4096):
         x = 0
         while (x < w, max_iter := 4096):
@@ -138,12 +156,9 @@ def diff_shadertoy(w : In[int], h : In[int],
             color_target = ray_color(ray, target_center, target_radius)
 
             #respect to x
-            d_cur_center.x = make__dfloat(cur_center.x, 1)
-            d_cur_center.y = make__dfloat(cur_center.y, 0)
+            d_cur_center.x.dval = 1
             d_color = d_ray_color(d_ray, d_cur_center, d_cur_radius)
-            image_x[w * y + x].x = d_color.x.dval
-            image_x[w * y + x].y = d_color.y.dval
-            image_x[w * y + x].z = d_color.z.dval
+
 
             gradient_x.x = gradient_x.x+d_color.x.dval*2*(d_color.x.val-color_target.x)            
             gradient_x.y = gradient_x.y+d_color.y.dval*2*(d_color.y.val-color_target.y)     
@@ -151,17 +166,31 @@ def diff_shadertoy(w : In[int], h : In[int],
             
 
             #respect to y
-            d_cur_center.x = make__dfloat(cur_center.x, 0)
-            d_cur_center.y = make__dfloat(cur_center.y, 1)
+            d_cur_center.x.dval = 0
+            d_cur_center.y.dval = 1
             d_color = d_ray_color(d_ray, d_cur_center, d_cur_radius)
-            
-            image_y[w * y + x].x = d_color.x.dval
-            image_y[w * y + x].y = d_color.y.dval
-            image_y[w * y + x].z = d_color.z.dval
 
             gradient_y.x = gradient_y.x+d_color.x.dval*2*(d_color.x.val-color_target.x)
             gradient_y.y = gradient_y.y+d_color.y.dval*2*(d_color.y.val-color_target.y)
             gradient_y.z = gradient_y.z+d_color.z.dval*2*(d_color.z.val-color_target.z)
+
+            #respect to z
+            d_cur_center.y.dval = 0
+            d_cur_center.z.dval = 1
+            d_color = d_ray_color(d_ray, d_cur_center, d_cur_radius)
+
+            gradient_z.x = gradient_z.x+d_color.x.dval*2*(d_color.x.val-color_target.x)
+            gradient_z.y = gradient_z.y+d_color.y.dval*2*(d_color.y.val-color_target.y)
+            gradient_z.z = gradient_z.z+d_color.z.dval*2*(d_color.z.val-color_target.z)
+
+            #respect to r
+            d_cur_center.z.dval = 0
+            d_cur_radius.dval = 1
+            d_color = d_ray_color(d_ray, d_cur_center, d_cur_radius)
+
+            gradient_r.x = gradient_r.x+d_color.x.dval*2*(d_color.x.val-color_target.x)
+            gradient_r.y = gradient_r.y+d_color.y.dval*2*(d_color.y.val-color_target.y)
+            gradient_r.z = gradient_r.z+d_color.z.dval*2*(d_color.z.val-color_target.z)
 
             #compute loss
             loss = loss+ (d_color.x.val-color_target.x)*(d_color.x.val-color_target.x)
@@ -177,7 +206,15 @@ def diff_shadertoy(w : In[int], h : In[int],
     gradient_y.x = gradient_y.x/(w*h)
     gradient_y.y = gradient_y.y/(w*h)
     gradient_y.z = gradient_y.z/(w*h) 
-    return make_vec3(average(gradient_x),average(gradient_y),1.0)
+
+    gradient_z.x = gradient_z.x/(w*h)
+    gradient_z.y = gradient_z.y/(w*h)
+    gradient_z.z = gradient_z.z/(w*h) 
+
+    gradient_r.x = gradient_r.x/(w*h)
+    gradient_r.y = gradient_r.y/(w*h)
+    gradient_r.z = gradient_r.z/(w*h) 
+    return make_vec4(average(gradient_x),average(gradient_y), average(gradient_z),average(gradient_r))
 
 
 # def diff_shadertoy(w : In[int], h : In[int], cur_img : In[Array[Vec3]], target_img : In[Array[Vec3]], loss : Out[Array[Vec3]]):

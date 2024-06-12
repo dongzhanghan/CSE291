@@ -106,9 +106,7 @@ if __name__ == '__main__':
     output_folder = 'output_images'
     os.makedirs(output_folder, exist_ok=True)
     for i in range(len(images)):
-        # 检查图像数据类型
-        if images[i].dtype != np.uint8:
-            images[i] = images[i].astype(np.uint8)
+        img = (images[i] * 255).astype(np.uint8)
     
         # 检查图像通道顺序，确保是 RGB
         if images[i].shape[2] == 3:  # 假设图像有3个通道
@@ -120,6 +118,6 @@ if __name__ == '__main__':
         # 生成完整的文件路径
         file_path = os.path.join(output_folder, file_name)
         # 将图像保存为 PNG 文件
-        cv2.imwrite(file_path, images[i])
+        cv2.imwrite(file_path, img)
 
 

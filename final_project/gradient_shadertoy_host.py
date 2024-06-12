@@ -24,10 +24,10 @@ if __name__ == '__main__':
     d_vec4 = structs["Vec4"]
     d_float = structs["_dfloat"]
 
-    cur_col1 = d_vec3(0.5, 0.6, 0.1)
+    cur_col1 = d_vec3(0.4, 0.6, 0.1)
     cur_col2 = d_vec3(1, 1, 1)
-    target_col1 = d_vec3(0.5, 0.4, 0.7)
-    target_col2= d_vec3(1, 1, 1)
+    target_col1 = d_vec3(0.5, 0.5, 0.5)
+    target_col2= d_vec3(0, 0, 0.1)
     losses = []
     col1_x = []
     col1_y = []
@@ -42,13 +42,13 @@ if __name__ == '__main__':
         gradient = grad_f(w, h, cur_col1, cur_col2, target_col1, target_col2, loss)
         #print("gradient is ", gradient.x, gradient.y, gradient.z)
 
-        cur_col1.x -= step_size * gradient.x
-        cur_col1.y -= step_size * gradient.y
-        cur_col1.z -= step_size * gradient.z
+        cur_col1.x -= step_size * gradient.x1
+        cur_col1.y -= step_size * gradient.y1
+        cur_col1.z -= step_size * gradient.z1
 
-        # cur_col2.x -= step_size * gradient.x
-        # cur_col2.y -= step_size * gradient.y
-        # cur_col2.z -= step_size * gradient.z
+        cur_col2.x -= step_size * gradient.x2
+        cur_col2.y -= step_size * gradient.y2
+        cur_col2.z -= step_size * gradient.z2
 
 
         col1_x.append(cur_col1.x)

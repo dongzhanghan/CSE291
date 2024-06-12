@@ -78,7 +78,7 @@ def ray_color(ray : In[Ray], center: In[Vec3], radius: In[float]) -> Vec3:
     blue : Vec3 = make_vec3(0.5, 0.7, 1)
     a : float
 
-    if t > 0:
+    if t > 0: 
         N = normalize(sub(add(ray.org, mul(t, ray.dir)), sph.center))
         ret_color = make_vec3(0.5 * (N.x + 1), 0.5 * (N.y + 1), 0.5 * (N.z + 1))
     else:
@@ -217,25 +217,6 @@ def diff_shadertoy(w : In[int], h : In[int],
     return make_vec4(average(gradient_x),average(gradient_y), average(gradient_z),average(gradient_r))
 
 
-# def diff_shadertoy(w : In[int], h : In[int], cur_img : In[Array[Vec3]], target_img : In[Array[Vec3]], loss : Out[Array[Vec3]]):
-#     y : int = 0
-#     x : int
-#     d_color : Diff[Vec3]
-#     d_col: Diff[Vec3]
-#     while (y < h, max_iter := 4096):
-#         x = 0
-#         while (x < w, max_iter := 4096):
-#             d_col.x.val = cur_img[w * y + x].x
-#             d_col.y.val = cur_img[w * y + x].y
-#             d_col.z.val = cur_img[w * y + x].z
-#             d_col.x.dval = 1
-#             d_col.y.dval = 1
-#             d_col.z.dval = 1
-#             d_color = d_shadertoy(d_col)
-#             loss[w * y + x].x = loss[w * y + x].x+d_color.x.dval*2*(d_color.x.val-target_img[w * y + x].x)
-#             loss[w * y + x].y = loss[w * y + x].y+d_color.y.dval*2*(d_color.y.val-target_img[w * y + x].y)
-#             loss[w * y + x].z = loss[w * y + x].z+d_color.z.dval*2*(d_color.z.val-target_img[w * y + x].z)
-#             x = x + 1
-#         y = y + 1
+
 
 

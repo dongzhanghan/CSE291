@@ -1,4 +1,5 @@
 import os
+import cv2
 import sys
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -101,4 +102,24 @@ if __name__ == '__main__':
     plt.show()
     plt.imshow(images[1000])
     plt.show()
+
+    output_folder = 'output_images'
+    os.makedirs(output_folder, exist_ok=True)
+    for i in range(len(images)):
+        # 检查图像数据类型
+        if images[i].dtype != np.uint8:
+            images[i] = images[i].astype(np.uint8)
+    
+        # 检查图像通道顺序，确保是 RGB
+        if images[i].shape[2] == 3:  # 假设图像有3个通道
+            img_rgb = cv2.cvtColor(images[i], cv2.COLOR_RGB2BGR)  # 转换为 OpenCV 使用的 BGR 格式
+        else:
+            img_rgb = images[i]
+        # 生成文件名，例如 0001.png, 0002.png, ...
+        file_name = f'{i+1:04d}.png'
+        # 生成完整的文件路径
+        file_path = os.path.join(output_folder, file_name)
+        # 将图像保存为 PNG 文件
+        cv2.imwrite(file_path, images[i])
+
 

@@ -9,6 +9,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+
+# def create_gradient_image(col1, col2):
+#     img = np.ones((100, 100, 3))
+#     y, x = np.ogrid[:100, :100]
+#     img = (1-x/100) * col1 + x/100 * col2
+#     return img
+
 if __name__ == '__main__':
     with open('loma_code/gradient_shadertoy.py') as f:
         structs, lib = compiler.compile(f.read(),
@@ -16,8 +23,6 @@ if __name__ == '__main__':
                                   output_filename = '_code/gradient_shadertoy')
     w = 100
     h = 100
-    img_x = np.ones((w, h, 3))
-    img_y = np.ones((w, h, 3))
     grad_f = lib.diff_shadertoy
     step_size = 1e-2
     d_vec3 = structs["Vec3"]
@@ -35,11 +40,13 @@ if __name__ == '__main__':
     col2_x = []
     col2_y = []
     col2_z = []
+    images = []
 
     epoch = 2000
     for i in range(epoch):
         loss = ctypes.c_float(0.0)
-        gradient = grad_f(w, h, cur_col1, cur_col2, target_col1, target_col2, loss)
+        img = np.zeros([h, w, 3], dtype = np.single)
+        gradient = grad_f(w, h, cur_col1, cur_col2, target_col1, target_col2, loss, img.ctypes.data_as(ctypes.POINTER(structs['Vec3'])))
         #print("gradient is ", gradient.x, gradient.y, gradient.z)
 
         cur_col1.x -= step_size * gradient.x1
@@ -59,6 +66,7 @@ if __name__ == '__main__':
         col2_z.append(cur_col2.z)
         
         losses.append(loss.value)
+        images.append(img)
 
     iterations = list(range(epoch))
     plt.figure(figsize=(10, 6))
@@ -85,5 +93,12 @@ if __name__ == '__main__':
     plt.legend()
 
     plt.grid(True)
+    plt.show()
+
+    plt.imshow(images[0])
+    plt.show()
+    plt.imshow(images[epoch-1])
+    plt.show()
+    plt.imshow(images[1000])
     plt.show()
 

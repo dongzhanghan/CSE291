@@ -79,7 +79,7 @@ d_ray_color = fwd_diff(ray_color)
 def diff_shadertoy(w : In[int], h : In[int], 
                     cur_col1 : In[Vec3], cur_col2 : In[Vec3],
                     target_col1 : In[Vec3], target_col2 : In[Vec3],
-                    loss:Out[float])->Vec6:
+                    loss:Out[float], image : Out[Array[Vec3]])->Vec6:
    
     y : float = 0.0
     x : float
@@ -89,12 +89,11 @@ def diff_shadertoy(w : In[int], h : In[int],
     gradient_x2: Vec3
     gradient_y2: Vec3
     gradient_z2: Vec3
-    #color_cur : Vec3
+    color_current : Vec3
     color_target : Vec3
     d_color : Diff[Vec3]
     xw_ratio : float
     d_xw_ratio : _dfloat
-    temp : Vec3
 
     d_cur_col1 : Diff[Vec3]
     d_cur_col2 : Diff[Vec3] 
@@ -106,7 +105,13 @@ def diff_shadertoy(w : In[int], h : In[int],
         while (x < w, max_iter := 4096):
             xw_ratio = x / w
             d_xw_ratio = make__dfloat(xw_ratio, 0)
+            color_current = ray_color(xw_ratio, cur_col1, cur_col2)
             color_target = ray_color(xw_ratio, target_col1, target_col2)
+
+            # plot the actual current color
+            image[float2int(w * y + x)].x = color_current.x
+            image[float2int(w * y + x)].y = color_current.y
+            image[float2int(w * y + x)].z = color_current.z
 
             #respect to col1.x
             d_cur_col1.x = make__dfloat(cur_col1.x, 1)

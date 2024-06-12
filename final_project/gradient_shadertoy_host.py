@@ -1,0 +1,89 @@
+import os
+import sys
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+import compiler
+import ctypes
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+if __name__ == '__main__':
+    with open('loma_code/gradient_shadertoy.py') as f:
+        structs, lib = compiler.compile(f.read(),
+                                  target = 'c',
+                                  output_filename = '_code/gradient_shadertoy')
+    w = 100
+    h = 100
+    img_x = np.ones((w, h, 3))
+    img_y = np.ones((w, h, 3))
+    grad_f = lib.diff_shadertoy
+    step_size = 1e-2
+    d_vec3 = structs["Vec3"]
+    d_vec4 = structs["Vec4"]
+    d_float = structs["_dfloat"]
+
+    cur_col1 = d_vec3(0.5, 0.6, 0.1)
+    cur_col2 = d_vec3(1, 1, 1)
+    target_col1 = d_vec3(0.5, 0.4, 0.7)
+    target_col2= d_vec3(1, 1, 1)
+    losses = []
+    col1_x = []
+    col1_y = []
+    col1_z = []
+    col2_x = []
+    col2_y = []
+    col2_z = []
+
+    epoch = 2000
+    for i in range(epoch):
+        loss = ctypes.c_float(0.0)
+        gradient = grad_f(w, h, cur_col1, cur_col2, target_col1, target_col2, loss)
+        #print("gradient is ", gradient.x, gradient.y, gradient.z)
+
+        cur_col1.x -= step_size * gradient.x
+        cur_col1.y -= step_size * gradient.y
+        cur_col1.z -= step_size * gradient.z
+
+        # cur_col2.x -= step_size * gradient.x
+        # cur_col2.y -= step_size * gradient.y
+        # cur_col2.z -= step_size * gradient.z
+
+
+        col1_x.append(cur_col1.x)
+        col1_y.append(cur_col1.y)
+        col1_z.append(cur_col1.z)
+        col2_x.append(cur_col2.x)
+        col2_y.append(cur_col2.y)
+        col2_z.append(cur_col2.z)
+        
+        losses.append(loss.value)
+
+    iterations = list(range(epoch))
+    plt.figure(figsize=(10, 6))
+    plt.title('Color Over Iterations')
+    plt.plot(iterations, col1_x, label='col1_x', color='red', linewidth=2)
+    plt.plot(iterations, col1_y, label='col1_y', color='green', linewidth=2)
+    plt.plot(iterations, col1_z, label='col1_z', color='blue', linewidth=2)
+    plt.plot(iterations, col2_x, label='col2_x', color='magenta', linewidth=2)
+    plt.plot(iterations, col2_y, label='col2_y', color='yellow', linewidth=2)
+    plt.plot(iterations, col2_z, label='col2_z', color='cyan', linewidth=2)
+    plt.ylabel('Color')
+   
+    plt.xlabel('Iterations')
+    plt.legend()
+
+    plt.grid(True)
+    plt.show()
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(iterations, losses, label='Loss', color='red', linewidth=2)
+    plt.title('Loss Function Over Iterations')
+    plt.xlabel('Iterations')
+    plt.ylabel('Loss Value')
+    plt.legend()
+
+    plt.grid(True)
+    plt.show()
+

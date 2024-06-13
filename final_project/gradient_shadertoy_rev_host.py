@@ -20,10 +20,9 @@ if __name__ == '__main__':
     step_size = 1e-2
     d_vec3 = structs["Vec3"]
     d_vec4 = structs["Vec4"]
-    d_float = structs["_dfloat"]
 
     cur_col1 = d_vec3(1, 0.6, 0.1)
-    cur_col2 = d_vec3(0.5, 0.5, 0.5)
+    cur_col2 = d_vec3(0.2, 0.5, 0.7)
     target_col1 = d_vec3(1, 0.5, 0.5)
     target_col2= d_vec3(0, .2, 0.1)
     losses = []
@@ -35,7 +34,7 @@ if __name__ == '__main__':
     col2_z = []
     images = []
 
-    epoch = 1000
+    epoch = 2000
     for i in range(epoch):
         loss = ctypes.c_float(0.0)
         img = np.zeros([h, w, 3], dtype = np.single)
@@ -49,6 +48,24 @@ if __name__ == '__main__':
         cur_col2.x -= step_size * gradient.x2
         cur_col2.y -= step_size * gradient.y2
         cur_col2.z -= step_size * gradient.z2
+
+        cur_col1.x = min(1,cur_col1.x)
+        cur_col1.y = min(1,cur_col1.y)
+        cur_col1.z = min(1,cur_col1.z)
+
+        cur_col2.x = min(1,cur_col2.x)
+        cur_col2.y = min(1,cur_col2.y)
+        cur_col2.z = min(1,cur_col2.z)
+
+
+        cur_col1.x = max(0,cur_col1.x)
+        cur_col1.y = max(0,cur_col1.y)
+        cur_col1.z = max(0,cur_col1.z)
+
+        cur_col2.x = max(0,cur_col2.x)
+        cur_col2.y = max(0,cur_col2.y)
+        cur_col2.z = max(0,cur_col2.z)
+
 
 
         col1_x.append(cur_col1.x)

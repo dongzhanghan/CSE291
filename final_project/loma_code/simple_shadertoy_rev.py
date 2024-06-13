@@ -19,7 +19,7 @@ d_shadertoy = rev_diff(shadertoy)
 def diff_shadertoy(col: In[Vec3], w : In[int], h : In[int], loss:Out[Vec3])->Vec3:
     y : int = 0
     x : int
-    gradient: Vec3
+    gradient: Vec3  
     d_col:Vec3
     while (y < h, max_iter := 4096):
         x = 0

@@ -1,4 +1,5 @@
 import os
+import cv2
 import sys
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -101,4 +102,17 @@ if __name__ == '__main__':
     plt.show()
     plt.imshow(images[1000])
     plt.show()
+
+    output_folder = 'output_images'
+    os.makedirs(output_folder, exist_ok=True)
+    for i in range(len(images)):
+        img = (images[i] * 255).astype(np.uint8)
+
+        # 生成文件名，例如 0001.png, 0002.png, ...
+        file_name = f'{i+1:04d}.png'
+        # 生成完整的文件路径
+        file_path = os.path.join(output_folder, file_name)
+        # 将图像保存为 PNG 文件
+        cv2.imwrite(file_path, img)
+
 

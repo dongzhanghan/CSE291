@@ -17,15 +17,15 @@ if __name__ == '__main__':
     w = 100
     h = 100
     grad_f = lib.diff_shadertoy
-    step_size = 1e-5
+    step_size = 1e-2
     d_vec3 = structs["Vec3"]
     d_vec4 = structs["Vec4"]
     d_float = structs["_dfloat"]
 
-    cur_col1 = d_vec3(0.4, 0.4, 0.4)
-    cur_col2 = d_vec3(0.9, 0.9, 0.9)
-    target_col1 = d_vec3(0.5, 0.5, 0.5)
-    target_col2= d_vec3(1, 1, 1)
+    cur_col1 = d_vec3(1, 0.6, 0.1)
+    cur_col2 = d_vec3(0.5, 0.5, 0.5)
+    target_col1 = d_vec3(1, 0.5, 0.5)
+    target_col2= d_vec3(0, .2, 0.1)
     losses = []
     col1_x = []
     col1_y = []
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     col2_z = []
     images = []
 
-    epoch = 300
+    epoch = 1000
     for i in range(epoch):
         loss = ctypes.c_float(0.0)
         img = np.zeros([h, w, 3], dtype = np.single)

@@ -22,9 +22,9 @@ if __name__ == '__main__':
     d_vec4 = structs["Vec4"]
     d_float = structs["_dfloat"]
 
-    cur_col1 = d_vec3(1, 0.2, 0.3)
-    cur_col2 = d_vec3(1, 1, 1)
-    target_col1 = d_vec3(0, 0.2, 0.3)
+    cur_col1 = d_vec3(0.4, 0.4, 0.4)
+    cur_col2 = d_vec3(0.9, 0.9, 0.9)
+    target_col1 = d_vec3(0.5, 0.5, 0.5)
     target_col2= d_vec3(1, 1, 1)
     losses = []
     col1_x = []

@@ -30,8 +30,8 @@ def diff_shadertoy(col: In[Vec3], w : In[int], h : In[int], loss:Out[Vec3])->Vec
             loss.x = loss.x+ (col.x-0.4)*(col.x-0.4)
             gradient.y = gradient.y+d_col.y*2*(col.y-0.8)
             loss.y = loss.y+ (col.y-0.8)*(col.y-0.8)
-            gradient.z = gradient.z+d_col.z*2*(col.z-0.6)
-            loss.z = loss.z+ (col.z-0.6)*(col.z-0.6)
+            gradient.z = gradient.z+d_col.z*2*(col.z-0.7)
+            loss.z = loss.z+ (col.z-0.7)*(col.z-0.7)
             x = x + 1
         y = y + 1
     gradient.x = gradient.x/(w*h)

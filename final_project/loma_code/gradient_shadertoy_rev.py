@@ -122,32 +122,22 @@ def diff_shadertoy(w : In[int], h : In[int],
 
             # respect to col1.x
             gradient_x1.x = gradient_x1.x+d_cur_col1.x*2*(color_current.x-color_target.x)            
-            gradient_x1.y = gradient_x1.y+d_cur_col1.x*2*(color_current.y-color_target.y)     
-            gradient_x1.z = gradient_x1.z+d_cur_col1.x*2*(color_current.z-color_target.z)
+        
             
             # #respect to col1.y
-            gradient_y1.x = gradient_y1.x+d_cur_col1.y*2*(color_current.x-color_target.x)            
             gradient_y1.y = gradient_y1.y+d_cur_col1.y*2*(color_current.y-color_target.y)     
-            gradient_y1.z = gradient_y1.z+d_cur_col1.y*2*(color_current.z-color_target.z)
+        
 
             # #respect to col1.z
-            gradient_z1.x = gradient_z1.x+d_cur_col1.z*2*(color_current.x-color_target.x)            
-            gradient_z1.y = gradient_z1.y+d_cur_col1.z*2*(color_current.y-color_target.y)     
             gradient_z1.z = gradient_z1.z+d_cur_col1.z*2*(color_current.z-color_target.z)
 
             #respect to col2.x
             gradient_x2.x = gradient_x2.x+d_cur_col2.x*2*(color_current.x-color_target.x)            
-            gradient_x2.y = gradient_x2.y+d_cur_col2.x*2*(color_current.y-color_target.y)     
-            gradient_x2.z = gradient_x2.z+d_cur_col2.x*2*(color_current.z-color_target.z)
             
             # #respect to col2.y
-            gradient_y2.x = gradient_y2.x+d_cur_col2.y*2*(color_current.x-color_target.x)            
             gradient_y2.y = gradient_y2.y+d_cur_col2.y*2*(color_current.y-color_target.y)     
-            gradient_y2.z = gradient_y2.z+d_cur_col2.y*2*(color_current.z-color_target.z)
 
-            # #respect to col2.z
-            gradient_z2.x = gradient_z2.x+d_cur_col2.z*2*(color_current.x-color_target.x)            
-            gradient_z2.y = gradient_z2.y+d_cur_col2.z*2*(color_current.y-color_target.y)     
+            # #respect to col2.z    
             gradient_z2.z = gradient_z2.z+d_cur_col2.z*2*(color_current.z-color_target.z)
 
             #compute loss

@@ -19,13 +19,13 @@ if __name__ == '__main__':
     y = 0.5
     z = 0.5
     grad_f = lib.diff_shadertoy
-    step_size = 1e-4
+    step_size = 1e-2
     d_vec3 = structs["Vec3"]
 
     loss_r = []
     loss_g = []
     loss_b = []
-    for i in range(100):
+    for i in range(1000):
         loss = d_vec3(0,0,0)
         gradient = grad_f(d_vec3(x,y,z),w, h, loss)
         x -= step_size * gradient.x
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         loss_r.append(loss.x)
         loss_g.append(loss.y)
         loss_b.append(loss.z)
-    iterations = list(range(100))  
+    iterations = list(range(1000))  
     
     plt.figure(figsize=(10, 6))
     plt.plot(iterations, loss_r, label='R Loss', color='red', linewidth=2)

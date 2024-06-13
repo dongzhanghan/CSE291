@@ -115,7 +115,9 @@ def diff_shadertoy(w : In[int], h : In[int],
             image[float2int(w * y + x)].y = color_current.y
             image[float2int(w * y + x)].z = color_current.z
 
-            
+            d_xw_ratio = 0
+            d_cur_col1 = make_vec3(0,0,0)
+            d_cur_col2 = make_vec3(0,0,0)
             d_ray_color(xw_ratio, d_xw_ratio, cur_col1, d_cur_col1, cur_col2, d_cur_col2, make_vec3(1.0,1.0,1.0))
 
             # respect to col1.x

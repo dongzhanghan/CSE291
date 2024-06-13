@@ -21,10 +21,10 @@ if __name__ == '__main__':
     d_vec3 = structs["Vec3"]
     d_vec4 = structs["Vec4"]
 
-    cur_col1 = d_vec3(1, 0.6, 0.1)
-    cur_col2 = d_vec3(0.2, 0.5, 0.7)
-    target_col1 = d_vec3(1, 0.5, 0.5)
-    target_col2= d_vec3(0, .2, 0.1)
+    cur_col1 = d_vec3(0, 0.5, 0.1)
+    cur_col2 = d_vec3(1, 1, 1)
+    target_col1 = d_vec3(0.5, 0.5, 0.5)
+    target_col2= d_vec3(0.8, 0.2, 0.7)
     losses = []
     col1_x = []
     col1_y = []
